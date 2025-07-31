@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Client, Wallet } from "xrpl";
+import { Client, Wallet, xrpToDrops, type Payment } from "xrpl";
 import AccountInfo from "./components/AccountInfo";
 
 export default function Home() {
@@ -47,6 +47,35 @@ export default function Home() {
     }
   };
 
+  const onSendTransaction = async (destination: string, amount: string) => {
+    if (!account) {
+      alert("No account available to send transaction.");
+      throw new Error("No account available");
+    }
+
+    try {
+      const tx: Payment = {
+        TransactionType: "Payment",
+        Account: account.address,
+        Destination: destination,
+        Amount: xrpToDrops(amount),
+      };
+
+      const submittedTx = await client.submitAndWait(tx, {
+        autofill: true,
+        wallet: account,
+      });
+
+      const newBalance = await client.getXrpBalance(account.address);
+      setAccountBalance(newBalance);
+      alert(`Transaction successful! tx: ${submittedTx.result.hash}`);
+      return submittedTx.result.hash;
+    } catch (error) {
+      console.error("Error sending transaction:", error);
+      throw error;
+    }
+  };
+
   return (
     <main className='flex flex-col items-center justify-center gap-8 my-12'>
       <div className='text-2xl font-bold'>Welcome to XRP Wallet</div>
@@ -60,7 +89,11 @@ export default function Home() {
 
       {isConnected &&
         (account ? (
-          <AccountInfo account={account} balance={accountBalance} />
+          <AccountInfo
+            account={account}
+            balance={accountBalance}
+            onSendTransaction={onSendTransaction}
+          />
         ) : isGettingAccount ? (
           <div>Getting account...</div>
         ) : (

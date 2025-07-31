@@ -4,15 +4,18 @@ import type { Wallet } from 'xrpl'
 type AccountInfoProps = {
   account: Wallet
   balance: number
+  onSendTransaction: (destination: string, amount: string) => Promise<string>
 }
 
-export default function AccountInfo({ account, balance }: AccountInfoProps) {
+export default function AccountInfo({ account, balance, onSendTransaction }: AccountInfoProps) {
   const [destinationAddress, setDestinationAddress] = useState('')
+  const [txHash, setTxHash] = useState<string | null>(null)
   const [amount, setAmount] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSendTransaction = async (e: React.FormEvent) => {
     e.preventDefault()
+    setTxHash(null)
     
     if (!destinationAddress || !amount) {
       alert('Please fill in all fields')
@@ -32,18 +35,11 @@ export default function AccountInfo({ account, balance }: AccountInfoProps) {
     setIsSubmitting(true)
     
     try {
-      // TODO: Implement XRP transaction logic
-      console.log('Sending transaction:', {
-        from: account.address,
-        to: destinationAddress,
-        amount: amount
-      })
-      
+      const txHash = await onSendTransaction(destinationAddress, amount)
       // Reset form after successful transaction
       setDestinationAddress('')
       setAmount('')
-      alert('Transaction sent successfully!')
-      
+      setTxHash(txHash)
     } catch (error) {
       console.error('Transaction failed:', error)
       alert('Transaction failed. Please try again.')
@@ -60,6 +56,12 @@ export default function AccountInfo({ account, balance }: AccountInfoProps) {
         <p><strong>Seed:</strong> {account.seed}</p>
         <p><strong>Balance: {balance} XRP</strong></p>
       </div>
+
+      {txHash && (
+        <div className='mt-4 text-green-600'>
+          <p>Transaction successful! Hash: {txHash}</p>
+        </div>
+      )}
 
       <div className='mt-6 w-full max-w-md'>
         <h3 className='text-lg font-semibold mb-4'>Send XRP</h3>

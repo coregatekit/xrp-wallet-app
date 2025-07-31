@@ -6,7 +6,8 @@ import AccountInfo from "./components/AccountInfo";
 export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [isGettingAccount, setIsGettingAccount] = useState(false);
-  const [account, setAcount] = useState<Wallet | null>(null);
+  const [account, setAccount] = useState<Wallet | null>(null);
+  const [accountBalance, setAccountBalance] = useState(0);
   const [client] = useState(new Client("wss://s.altnet.rippletest.net:51233"));
 
   useEffect(() => {
@@ -18,8 +19,9 @@ export default function Home() {
   const handleCreateAccount = async () => {
     setIsGettingAccount(true);
     try {
-      const wallet = (await client.fundWallet()).wallet;
-      setAcount(wallet);
+      const account = await client.fundWallet();
+      setAccount(account.wallet);
+      setAccountBalance(account.balance || 0);
     } catch (error) {
       console.error("Error creating account:", error);
     } finally {
@@ -27,18 +29,23 @@ export default function Home() {
     }
   };
 
-  const handleRecoverAccount = () => {
+  const handleRecoverAccount = async () => {
     const recoverySeed = prompt("Enter your recovery seed:");
 
     if (recoverySeed) {
+      setIsGettingAccount(true);
       try {
-        const recoveryWallt = Wallet.fromSeed(recoverySeed);
-        setAcount(recoveryWallt);
+        const recoveryWallet = Wallet.fromSeed(recoverySeed);
+        const balance = await client.getXrpBalance(recoveryWallet.address);
+        setAccount(recoveryWallet);
+        setAccountBalance(balance);
       } catch (error) {
         console.error("Error recovering account:", error);
+      } finally {
+        setIsGettingAccount(false);
       }
     }
-  }
+  };
 
   return (
     <main className='flex flex-col items-center justify-center gap-8 my-12'>
@@ -53,7 +60,7 @@ export default function Home() {
 
       {isConnected &&
         (account ? (
-          <AccountInfo account={account} />
+          <AccountInfo account={account} balance={accountBalance} />
         ) : isGettingAccount ? (
           <div>Getting account...</div>
         ) : (

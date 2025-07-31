@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Client, type Wallet } from "xrpl";
+import { Client, Wallet } from "xrpl";
 import AccountInfo from "./components/AccountInfo";
 
 export default function Home() {
@@ -26,6 +26,19 @@ export default function Home() {
       setIsGettingAccount(false);
     }
   };
+
+  const handleRecoverAccount = () => {
+    const recoverySeed = prompt("Enter your recovery seed:");
+
+    if (recoverySeed) {
+      try {
+        const recoveryWallt = Wallet.fromSeed(recoverySeed);
+        setAcount(recoveryWallt);
+      } catch (error) {
+        console.error("Error recovering account:", error);
+      }
+    }
+  }
 
   return (
     <main className='flex flex-col items-center justify-center gap-8 my-12'>
@@ -59,10 +72,7 @@ export default function Home() {
               <button
                 type='button'
                 className='px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors cursor-pointer'
-                onClick={() => {
-                  // TODO: Implement recovery account functionality
-                  console.log("Recovery account clicked");
-                }}
+                onClick={handleRecoverAccount}
               >
                 Recover Existing Account
               </button>

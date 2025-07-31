@@ -124,7 +124,7 @@ export default function AccountInfo({
           <button
             type='submit'
             disabled={isSubmitting || !destinationAddress || !amount}
-            className='w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md font-semibold transition-colors'
+            className='w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md font-semibold transition-colors cursor-pointer disabled:cursor-not-allowed'
           >
             {isSubmitting ? "Sending..." : "Send XRP"}
           </button>

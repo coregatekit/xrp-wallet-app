@@ -5,12 +5,14 @@ type AccountInfoProps = {
   account: Wallet;
   balance: number;
   onSendTransaction: (destination: string, amount: string) => Promise<string>;
+  onCheckOtherAddressBalance: () => Promise<void>;
 };
 
 export default function AccountInfo({
   account,
   balance,
   onSendTransaction,
+  onCheckOtherAddressBalance,
 }: AccountInfoProps) {
   const [destinationAddress, setDestinationAddress] = useState("");
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -65,6 +67,16 @@ export default function AccountInfo({
         <p>
           <strong>Balance: {balance} XRP</strong>
         </p>
+      </div>
+
+      <div className='mt-4'>
+        <button
+          type='button'
+          onClick={onCheckOtherAddressBalance}
+          className='w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-md font-semibold transition-colors cursor-pointer disabled:cursor-not-allowed'
+        >
+          Check other address balance
+        </button>
       </div>
 
       {txHash && (

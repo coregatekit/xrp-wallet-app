@@ -76,6 +76,19 @@ export default function Home() {
     }
   };
 
+  const handleCheckOtherAddressBalance = async () => {
+    const address = prompt("Enter the XRP address to check balance:");
+    if (address) {
+      try {
+        const balance = await client.getXrpBalance(address);
+        alert(`Balance for ${address}: ${balance} XRP`);
+      } catch (error) {
+        console.error("Error checking balance:", error);
+        alert("Failed to check balance. Please try again.");
+      }
+    }
+  };
+
   return (
     <main className='flex flex-col items-center justify-center gap-8 my-12'>
       <div className='text-2xl font-bold'>Welcome to XRP Wallet</div>
@@ -93,6 +106,7 @@ export default function Home() {
             account={account}
             balance={accountBalance}
             onSendTransaction={onSendTransaction}
+            onCheckOtherAddressBalance={handleCheckOtherAddressBalance}
           />
         ) : isGettingAccount ? (
           <div>Getting account...</div>

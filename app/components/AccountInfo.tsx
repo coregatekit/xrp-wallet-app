@@ -1,13 +1,18 @@
 import React from 'react'
+import type { Wallet } from 'xrpl'
 
 type AccountInfoProps = {
-  account: any; // Replace 'any' with the actual type of account if known
+  account: Wallet
 }
 
 export default function AccountInfo({ account }: AccountInfoProps) {
   return (
-    <div>
-      
+    <div className='flex flex-col items-center p-6 rounded-lg shadow-md'>
+      <h2 className='text-xl font-semibold'>Account Information</h2>
+      <div className='mt-4'>
+        <p><strong>Address:</strong> {account.address}</p>
+        <p><strong>Seed:</strong> {account.seed}</p>
+      </div>
     </div>
   )
 }

@@ -47,7 +47,7 @@ export default function Home() {
     }
   };
 
-  const onSendTransaction = async (destination: string, amount: string, memo?: string) => {
+  const onSendTransaction = async (destination: string, amount: string, destinationTag?: string) => {
     if (!account) {
       alert("No account available to send transaction.");
       throw new Error("No account available");
@@ -62,8 +62,8 @@ export default function Home() {
       };
 
       // Add memo if provided
-      if (memo) {
-        tx.DestinationTag = Number(memo);
+      if (destinationTag) {
+        tx.DestinationTag = Number(destinationTag);
       }
 
       const submittedTx = await client.submitAndWait(tx, {

@@ -4,7 +4,7 @@ import type { Wallet } from "xrpl";
 type AccountInfoProps = {
   account: Wallet;
   balance: number;
-  onSendTransaction: (destination: string, amount: string, memo?: string) => Promise<string>;
+  onSendTransaction: (destination: string, amount: string, destinationTag?: string) => Promise<string>;
   onCheckOtherAddressBalance: () => Promise<void>;
 };
 
@@ -15,9 +15,9 @@ export default function AccountInfo({
   onCheckOtherAddressBalance,
 }: AccountInfoProps) {
   const [destinationAddress, setDestinationAddress] = useState("");
+  const [destinationTag, setDestinationTag] = useState("");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
-  const [memo, setMemo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSendTransaction = async (e: React.FormEvent) => {
@@ -42,11 +42,11 @@ export default function AccountInfo({
     setIsSubmitting(true);
 
     try {
-      const txHash = await onSendTransaction(destinationAddress, amount, memo);
+      const txHash = await onSendTransaction(destinationAddress, amount, destinationTag);
       // Reset form after successful transaction
       setDestinationAddress("");
       setAmount("");
-      setMemo("");
+      setDestinationTag("");
       setTxHash(txHash);
     } catch (error) {
       console.error("Transaction failed:", error);
@@ -140,16 +140,12 @@ export default function AccountInfo({
               Memo (Optional)
             </label>
             <input
-              id='memo'
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              placeholder='Enter optional memo/note for this transaction'
-              maxLength={100}
+              id='destinationTag'
+              value={destinationTag}
+              onChange={(e) => setDestinationTag(e.target.value)}
+              placeholder='Enter optional destination tag for this transaction'
               className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical'
             />
-            <div className='text-xs text-gray-500 mt-1'>
-              {memo.length}/100 characters
-            </div>
           </div>
 
           <button

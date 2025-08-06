@@ -4,7 +4,7 @@ import type { Wallet } from "xrpl";
 type AccountInfoProps = {
   account: Wallet;
   balance: number;
-  onSendTransaction: (destination: string, amount: string) => Promise<string>;
+  onSendTransaction: (destination: string, amount: string, memo?: string) => Promise<string>;
   onCheckOtherAddressBalance: () => Promise<void>;
 };
 
@@ -17,6 +17,7 @@ export default function AccountInfo({
   const [destinationAddress, setDestinationAddress] = useState("");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
+  const [memo, setMemo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSendTransaction = async (e: React.FormEvent) => {
@@ -41,10 +42,11 @@ export default function AccountInfo({
     setIsSubmitting(true);
 
     try {
-      const txHash = await onSendTransaction(destinationAddress, amount);
+      const txHash = await onSendTransaction(destinationAddress, amount, memo);
       // Reset form after successful transaction
       setDestinationAddress("");
       setAmount("");
+      setMemo("");
       setTxHash(txHash);
     } catch (error) {
       console.error("Transaction failed:", error);
@@ -131,6 +133,23 @@ export default function AccountInfo({
               className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
               required
             />
+          </div>
+
+          <div>
+            <label htmlFor='memo' className='block text-sm font-medium mb-1'>
+              Memo (Optional)
+            </label>
+            <input
+              id='memo'
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder='Enter optional memo/note for this transaction'
+              maxLength={100}
+              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical'
+            />
+            <div className='text-xs text-gray-500 mt-1'>
+              {memo.length}/100 characters
+            </div>
           </div>
 
           <button

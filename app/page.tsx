@@ -47,7 +47,7 @@ export default function Home() {
     }
   };
 
-  const onSendTransaction = async (destination: string, amount: string) => {
+  const onSendTransaction = async (destination: string, amount: string, memo?: string) => {
     if (!account) {
       alert("No account available to send transaction.");
       throw new Error("No account available");
@@ -60,6 +60,18 @@ export default function Home() {
         Destination: destination,
         Amount: xrpToDrops(amount),
       };
+
+      // Add memo if provided
+      if (memo?.trim()) {
+        tx.Memos = [
+          {
+            Memo: {
+              MemoData: Buffer.from(memo.trim(), 'utf8').toString('hex').toUpperCase(),
+              MemoType: Buffer.from('text/plain', 'utf8').toString('hex').toUpperCase(),
+            },
+          },
+        ];
+      }
 
       const submittedTx = await client.submitAndWait(tx, {
         autofill: true,

@@ -66,7 +66,7 @@ export default function AccountInfo({
         <p>
           <strong>Seed:</strong> {account.seed}
         </p>
-        <p>
+        <p className={`text-4xl${balance > 0 ? " text-green-600" : " text-red-600"}`}>
           <strong>Balance: {balance} XRP</strong>
         </p>
       </div>

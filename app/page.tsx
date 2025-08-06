@@ -62,15 +62,8 @@ export default function Home() {
       };
 
       // Add memo if provided
-      if (memo?.trim()) {
-        tx.Memos = [
-          {
-            Memo: {
-              MemoData: Buffer.from(memo.trim(), 'utf8').toString('hex').toUpperCase(),
-              MemoType: Buffer.from('text/plain', 'utf8').toString('hex').toUpperCase(),
-            },
-          },
-        ];
+      if (memo) {
+        tx.DestinationTag = Number(memo);
       }
 
       const submittedTx = await client.submitAndWait(tx, {
